@@ -127,6 +127,8 @@ found:
   p->context.ra = (uint64)forkret;
   p->context.sp = p->kstack + PGSIZE;
 
+  p->syscall_trace = 0; // (newly added) 为 syscall_trace 设置一个 0 的默认值
+
   return p;
 }
 
@@ -290,6 +292,8 @@ fork(void)
   np->cwd = idup(p->cwd);
 
   safestrcpy(np->name, p->name, sizeof(p->name));
+
+  np->syscall_trace = p->syscall_trace; // HERE!!! 子进程继承父进程的 syscall_trace
 
   pid = np->pid;
 
@@ -692,4 +696,16 @@ procdump(void)
     printf("%d %s %s", p->pid, state, p->name);
     printf("\n");
   }
+}
+
+uint64
+sys_trace(void)
+{
+ int mask;
+
+ if(argint(0, &mask) < 0)
+     return -1;
+	
+ myproc()->syscall_trace = mask;
+ return 0;
 }
