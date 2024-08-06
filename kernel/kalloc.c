@@ -80,3 +80,25 @@ kalloc(void)
     memset((char*)r, 5, PGSIZE); // fill with junk
   return (void*)r;
 }
+
+
+// kernel/kalloc.c
+uint64
+kget(void)
+{
+  struct run *r;
+  // 空闲的内存页数
+  uint64 memory_num = 0;
+ 
+  // 上锁，防止其他进程的干扰
+  acquire(&kmem.lock);
+  r = kmem.freelist;
+  // 遍历freelist
+  while (r) {
+    r = r->next;
+    ++memory_num;
+  }
+  release(&kmem.lock);
+  
+  return PGSIZE * memory_num;
+}
