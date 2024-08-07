@@ -332,6 +332,9 @@ sfence_vma()
 #define PTE_X (1L << 3)
 #define PTE_U (1L << 4) // 1 -> user can access
 
+#define PTE_A (1L << 6) // <加入对访问位的支持>
+#define MAXSCAN 32      // <限制一次最多可以查询的页面数量>
+
 // shift a physical address to the right place for a PTE.
 #define PA2PTE(pa) ((((uint64)pa) >> 12) << 10)
 
